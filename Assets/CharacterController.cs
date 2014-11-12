@@ -11,11 +11,17 @@ public class CharacterController : MonoBehaviour {
 	private ThirdPersonCamera gamecam;
 	[SerializeField]
 	private float directionalSpeed = 3.0f;
+	[SerializeField]
+	private float rotationDegreesPerSecond = 120f;
 
 	private float speed = 0.0f;
 	private float direction = 0f;
 	private float horizontal = 0.0f;
 	private float vertical = 0.0f;
+	private AnimatorStateInfo stateInfo;
+
+	//Hashes
+	private int m_LocomotionId = 0;
 
 
 	// Use this for initialization
@@ -31,6 +37,7 @@ public class CharacterController : MonoBehaviour {
 
 			animator.SetLayerWeight(1,1);
 		}
+		m_LocomotionId = Animator.StringToHash("Base Layer.Locomotion");
 	}
 
 	// Update is called once per frame
@@ -38,12 +45,20 @@ public class CharacterController : MonoBehaviour {
 		horizontal = Input.GetAxis("Horizontal");
 		vertical = Input.GetAxis("Vertical");
 
-		speed = new Vector2(horizontal, vertical).sqrMagnitude;
+		StickToWorldSpace(this.transform, gamecam.transform, ref DirectionDampTime, ref speed);
 
 		animator.SetFloat("Speed", speed);
 		animator.SetFloat("Direction", horizontal, DirectionDampTime, Time.deltaTime);
 
-		StickToWorldSpace(this.transform, gamecam.transform, ref DirectionDampTime, ref speed);
+
+	}
+
+	void FixedUpdate()
+	{
+		if (IsInLocomotion() && ((direction >= 0 && horizontal >= 0) || (direction < 0 && horizontal < 0)))
+		{
+			Vector3 rotationAmount = Vector3.Lerp(Vector3.zero, new Vector3(0f, rotationDegreesPerSecond * (horizontal < 0f ? -1f : 1f), 0f), Mathf.Abs(horizontal));
+		}
 	}
 
 
@@ -74,6 +89,11 @@ public class CharacterController : MonoBehaviour {
 
 		directionOut = angleRootToMove * directionalSpeed;
 
+	}
+
+	public bool IsInLocomotion()
+	{
+		return stateInfo.nameHash == m_LocomotionId;
 	}
 
 
