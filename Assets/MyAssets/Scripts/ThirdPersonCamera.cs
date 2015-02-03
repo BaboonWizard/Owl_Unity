@@ -31,11 +31,11 @@ public class ThirdPersonCamera : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
-	}
 
-	void LateUpdate()
+	
+
+
+	void Update()
 	{
 		Vector3 characterOffset = follow.position + offset;
 
@@ -43,7 +43,8 @@ public class ThirdPersonCamera : MonoBehaviour {
 		LookDir.y = 0;
 		LookDir.Normalize();
 		Debug.DrawRay(this.transform.position, LookDir, Color.green);
-
+		Debug.Log(LookDir);
+		Debug.Log("LookDir");
 
 
 
@@ -58,7 +59,8 @@ public class ThirdPersonCamera : MonoBehaviour {
 		smoothPosition(this.transform.position, targetPosition);
 
 		transform.LookAt(follow);
-
+		Debug.Log(follow);
+		Debug.Log("follow");
 		              }
 
 	private void smoothPosition(Vector3 fromPos, Vector3 toPos)
